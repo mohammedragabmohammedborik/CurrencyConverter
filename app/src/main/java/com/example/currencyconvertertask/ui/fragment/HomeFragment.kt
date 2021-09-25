@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.currencyconvertertask.R
 import com.example.currencyconvertertask.databinding.HomeFragmentBinding
 import com.example.currencyconvertertask.datalayer.data.ModelRateData
@@ -37,6 +38,10 @@ class HomeFragment :Fragment() {
     private val binding get() = _binding!!
     private  lateinit var  currencyRateAdapter:CurrencyRateAdapter
     lateinit var homeViewModel: HomeViewModel
+
+    /**
+     * i will use it to share data between fragment and activity
+     */
     private val shareDataBetweenFragmentViewModel: ShareDataBetweenFragmentViewModel by activityViewModels()
     // inject factory view model
     @Inject
@@ -97,6 +102,9 @@ class HomeFragment :Fragment() {
             }
         })
 
+        val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        binding.currencyRateList.addItemDecoration(decoration)
+
         binding.currencyRateList.adapter=currencyRateAdapter
         //
 
@@ -116,8 +124,10 @@ class HomeFragment :Fragment() {
                     val list=it.hashMap?.entries?.map { ModelRateData(it.key,it.value) }
 
                    currencyRateAdapter.submitList(list)
-//                    adapter.add(moviesLiveData.movies)
-//                    showEmptyList(moviesLiveData.movies?.isEmpty() ?: false)
+                    it.base?.let{
+                        shareDataBetweenFragmentViewModel.setBase(it)
+                    }
+
                 }
                 NetworkState.LOADING -> {
                     // Loading

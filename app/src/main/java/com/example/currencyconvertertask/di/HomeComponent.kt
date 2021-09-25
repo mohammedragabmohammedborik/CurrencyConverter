@@ -1,6 +1,4 @@
 package com.example.currencyconvertertask.di
-
-import com.example.currencyconvertertask.databinding.LayoutCalculationBinding
 import com.example.currencyconvertertask.ui.MainActivity
 import com.example.currencyconvertertask.ui.fragment.HomeFragment
 import com.example.currencyconvertertask.ui.fragment.OnlineFragment

@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.currencyconvertertask.R
 import com.example.currencyconvertertask.databinding.HomeFragmentBinding
 import com.example.currencyconvertertask.datalayer.data.ModelRateData
@@ -22,6 +23,7 @@ import com.example.currencyconvertertask.repository.NetworkState
 import com.example.currencyconvertertask.ui.MainActivity
 import com.example.currencyconvertertask.ui.fragment.adapter.ClickedItem
 import com.example.currencyconvertertask.ui.fragment.adapter.CurrencyRateAdapter
+import com.example.currencyconvertertask.utility.Utile
 import com.teraninjas.mazadat.presentationlayer.ViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -63,10 +65,12 @@ class OnlineFragment :Fragment() {
     ): View? {
         _binding = HomeFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
-       // type= arguments?.getInt("type")!!
-        Log.w(TAG, "onCreateView: TEST")
 
-            homeViewModel.getCurrencyDataOnline()
+            if (Utile.isOnline(requireActivity())) {
+                homeViewModel.getCurrencyDataOnline()
+            }else{
+                Utile.showToast(requireActivity(),getString(R.string.no_internet))
+            }
 
         initAdapter()
         initObserver()
@@ -98,6 +102,11 @@ class OnlineFragment :Fragment() {
             }
         })
 
+
+
+        val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        binding.currencyRateList.addItemDecoration(decoration)
+
         binding.currencyRateList.adapter=currencyRateAdapter
         //
 
@@ -117,14 +126,20 @@ class OnlineFragment :Fragment() {
                     val list=it.hashMap?.entries?.map { ModelRateData(it.key,it.value) }
 
                    currencyRateAdapter.submitList(list)
-//                    adapter.add(moviesLiveData.movies)
-//                    showEmptyList(moviesLiveData.movies?.isEmpty() ?: false)
+                    it.base?.let{
+                        shareDataBetweenFragmentViewModel.setBase(it)
+                    }
+                    binding.pb.visibility=View.GONE
+
                 }
                 NetworkState.LOADING -> {
+                    binding.pb.visibility=View.VISIBLE
                     // Loading
                 }
                 else -> {
-                    Toast.makeText(requireActivity(), it.networkState.message, Toast.LENGTH_SHORT).show()
+                    it.networkState.message?.let { it1 -> Utile.showToast(requireActivity(), it1) }
+                    binding.pb.visibility=View.GONE
+
                 }
             }
 
