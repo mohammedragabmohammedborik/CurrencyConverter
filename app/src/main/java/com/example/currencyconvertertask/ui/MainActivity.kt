@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host_fragment)
         //
 
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.onlineFragment))
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.onlineFragment,R.id.homeFragment))
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.bottomNavigation.setupWithNavController(navController)
